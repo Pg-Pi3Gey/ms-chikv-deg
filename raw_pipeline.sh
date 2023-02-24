@@ -11,6 +11,8 @@ cd ~/CHIKV_DEG/raw_seq/untrimmed_seq
 mkdir -p ~/CHIKV_DEG/results/fastqc/untrimmed
 fastqc -t 16 *.fastq.gz -o ~/CHIKV_DEG/results/fastqc/untrimmed
 echo "|> Quality Check via FASTQC on untrimmed sequencence completed <|"
+# create single report via multiqc
+multiqc ~/CHIKV_DEG/results/fastqc/untrimmed -o ~/CHIKV_DEG/results/multiqc -n untrimmed_multiqc_report.html
 
 ##  Total runtime
 duration=$SECONDS
