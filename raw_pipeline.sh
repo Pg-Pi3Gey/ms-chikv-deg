@@ -36,6 +36,10 @@ fastqc -t 16 ~/CHIKV_DEG/raw_seq/trimmed_seq/*.fastq.gz -o ~/CHIKV_DEG/results/f
 multiqc ~/CHIKV_DEG/results/fastqc/trimmed -o ~/CHIKV_DEG/results/multiqc -n trimmed_multiqc_report.html
 
 
+# # delete unpaired reads to save storage #
+# rm ~/CHIKV_DEG/raw_seq/trimmed_seq/*_unpaired*
+# rm -rf ~/CHIKV_DEG/raw_seq/untrimmed_seq
+
 ##  Total runtime
 duration=$SECONDS
 echo "$(($duration / 60)) minutes and $(($duration % 60)) seconds elapsed."
