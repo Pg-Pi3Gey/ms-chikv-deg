@@ -35,10 +35,26 @@ fastqc -t 16 ~/CHIKV_DEG/raw_seq/trimmed_seq/*.fastq.gz -o ~/CHIKV_DEG/results/f
 # create single report via multiqc #
 multiqc ~/CHIKV_DEG/results/fastqc/trimmed -o ~/CHIKV_DEG/results/multiqc -n trimmed_multiqc_report.html
 
-
 # # delete unpaired reads to save storage #
 # rm ~/CHIKV_DEG/raw_seq/trimmed_seq/*_unpaired*
 # rm -rf ~/CHIKV_DEG/raw_seq/untrimmed_seq
+
+## STEP 3: Alignments via HISAT2 ##
+
+# # get the genome index #
+# mkdir -p ~/CHIKV_DEG/tools/hisat2
+# cd ~/CHIKV_DEG/tools/hisat2
+# wget https://genome-idx.s3.amazonaws.com/hisat/grch38_genome.tar.gz
+# tar -xvzf grch38_genome.tar.gz && rm grch38_genome.tar.gz
+
+# align the trimmed reads to the genome #
+cd ~/CHIKV_DEG/raw_seq/trimmed_seq/
+mkdir -p ~/CHIKV_DEG/results/hisat2
+for i in `ls *.fastq.gz | sed 's/_[12]_paired.fastq.gz//g' | sort -u`
+do
+echo "Aligning: $i" && hisat2 -q -p 16 -x ~/CHIKV_DEG/tools/hisat2/grch38/genome -1 ${i}_1_paired.fastq.gz -2 ${i}_2_paired.fastq.gz | samtools sort -o ~/CHIKV_DEG/results/hisat2/${i}.hisat.sorted.bam
+done
+echo "|> Alignment Completed! <|"
 
 ##  Total runtime
 duration=$SECONDS
