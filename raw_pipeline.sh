@@ -56,6 +56,20 @@ echo "Aligning: $i" && hisat2 -q -p 16 -x ~/CHIKV_DEG/tools/hisat2/grch38/genome
 done
 echo "|> Alignment Completed! <|"
 
-##  Total runtime
+## STEP 4: Quantification via Featurecount ##
+mkdir -p ~/CHIKV_DEG/tools/featurecount
+cd ~/CHIKV_DEG/tools/featurecount
+
+# # get the gtf file #
+# wget https://ftp.ensembl.org/pub/release-109/gtf/homo_sapiens/Homo_sapiens.GRCh38.109.gtf.gz
+# gzip -d Homo_sapiens.GRCh38.109.gtf.gz
+
+# run featurecounts #
+mkdir -p ~/CHIKV_DEG/results/featurecounts/
+featureCounts -p --countReadPairs -T 16 -a Homo_sapiens.GRCh38.109.gtf -o ~/CHIKV_DEG/results/featurecounts/featurecounts_output.txt ../../results/hisat2/*.bam
+echo "featureCounts finished running!"
+
+
+###  Total runtime
 duration=$SECONDS
 echo "$(($duration / 60)) minutes and $(($duration % 60)) seconds elapsed."
