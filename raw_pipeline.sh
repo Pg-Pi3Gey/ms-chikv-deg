@@ -27,7 +27,7 @@ done
 # move trimmed sequence to different folder #
 mkdir ../trimmed_seq
 mv *pair* ../trimmed_seq
-echo "|> Trimmomatic finished running! <|"
+echo "|> Trimming completed! <|"
 
 # Quality check the trimmed sequences via FASTQC #
 mkdir -p ~/CHIKV_DEG/results/fastqc/trimmed
@@ -35,8 +35,8 @@ fastqc -t 16 ~/CHIKV_DEG/raw_seq/trimmed_seq/*.fastq.gz -o ~/CHIKV_DEG/results/f
 # create single report via multiqc #
 multiqc ~/CHIKV_DEG/results/fastqc/trimmed -o ~/CHIKV_DEG/results/multiqc -n trimmed_multiqc_report.html
 
-# # delete unpaired reads to save storage #
-# rm ~/CHIKV_DEG/raw_seq/trimmed_seq/*_unpaired*
+# delete raw & unpaired reads to save storage #
+rm ~/CHIKV_DEG/raw_seq/trimmed_seq/*_unpaired*
 # rm -rf ~/CHIKV_DEG/raw_seq/untrimmed_seq
 
 ## STEP 3: Alignments via HISAT2 ##
@@ -52,7 +52,7 @@ cd ~/CHIKV_DEG/raw_seq/trimmed_seq/
 mkdir -p ~/CHIKV_DEG/results/hisat2
 for i in `ls *.fastq.gz | sed 's/_[12]_paired.fastq.gz//g' | sort -u`
 do
-echo "Aligning: $i" && hisat2 -q -p 16 -x ~/CHIKV_DEG/tools/hisat2/grch38/genome -1 ${i}_1_paired.fastq.gz -2 ${i}_2_paired.fastq.gz | samtools sort -o ~/CHIKV_DEG/results/hisat2/${i}.hisat.sorted.bam
+echo "Aligning: $i" && hisat2 -p 16 --rna-strandness RF -x ~/CHIKV_DEG/tools/hisat2/grch38/genome -1 ${i}_1_paired.fastq.gz -2 ${i}_2_paired.fastq.gz | samtools sort -o ~/CHIKV_DEG/results/hisat2/${i}.hisat.sorted.bam
 done
 echo "|> Alignment Completed! <|"
 
@@ -66,8 +66,8 @@ cd ~/CHIKV_DEG/tools/featurecount
 
 # run featurecounts #
 mkdir -p ~/CHIKV_DEG/results/featurecounts/
-featureCounts -p --countReadPairs -T 16 -a Homo_sapiens.GRCh38.109.gtf -o ~/CHIKV_DEG/results/featurecounts/featurecounts_output.txt ../../results/hisat2/*.bam
-echo "featureCounts finished running!"
+featureCounts -T 16 -s 2 -p --countReadPairs -a Homo_sapiens.GRCh38.109.gtf -o ~/CHIKV_DEG/results/featurecounts/featurecounts_output.txt ../../results/hisat2/*.bam
+echo "|> Quantification Completed! <|"
 
 
 ###  Total runtime
