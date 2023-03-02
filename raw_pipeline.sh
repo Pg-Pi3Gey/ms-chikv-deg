@@ -15,14 +15,14 @@ multiqc ~/CHIKV_DEG/results/fastqc/untrimmed -o ~/CHIKV_DEG/results/multiqc -n u
 
 ## STEP 2: Trimming bad reads via Trimmomatic ##
 cd ~/CHIKV_DEG/raw_seq/untrimmed_seq/
-cp ~/CHIKV_DEG/tools/Trimmomatic-0.39/adapters/TruSeq3-PE.fa .
+cp ~/CHIKV_DEG/tools/Trimmomatic-0.39/adapters/TruSeq3-PE-2.fa .
 for infile in *_1.fastq.gz
 do
     base=$(basename ${infile} _1.fastq.gz)
     java -jar ~/CHIKV_DEG/tools/Trimmomatic-0.39/trimmomatic-0.39.jar PE -threads 16 -phred33 ${infile} ${base}_2.fastq.gz \
     ${base}_1_paired.fastq.gz ${base}_1_unpaired.fastq.gz \
     ${base}_2_paired.fastq.gz ${base}_2_unpaired.fastq.gz \
-    ILLUMINACLIP:TruSeq3-PE.fa:2:30:10:2:True LEADING:5 TRAILING:5 SLIDINGWINDOW:5:20 MINLEN:35
+    ILLUMINACLIP:TruSeq3-PE-2.fa:2:30:10:2:True LEADING:5 TRAILING:5 SLIDINGWINDOW:5:20 MINLEN:35
 done
 # move trimmed sequence to different folder #
 mkdir ../trimmed_seq
